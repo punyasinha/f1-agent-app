@@ -40,7 +40,11 @@ export default function ChatInterface() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, threadId }),
+        body: JSON.stringify({
+          message: text,
+          threadId,
+          history: messages.map((m) => ({ role: m.role, text: m.text })),
+        }),
       });
 
       const data = await res.json();

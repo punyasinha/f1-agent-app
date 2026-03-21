@@ -63,7 +63,7 @@ async function callMcpTool(name: string, args: Record<string, unknown>): Promise
 
 export async function POST(req: Request) {
   try {
-    const { message, threadId } = await req.json();
+    const { message, threadId, history } = await req.json();
 
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "message is required" }, { status: 400 });
@@ -72,10 +72,17 @@ export async function POST(req: Request) {
     // Get Azure OpenAI client from the Foundry project
     const openai = await client.getAzureOpenAIClient({ apiVersion: "2025-01-01-preview" });
 
-    // Build message history — threadId is used as a simple key here
-    // For real persistence you'd store messages server-side; for now we rebuild each time
+    // Build message history from prior turns sent by the client
+    const priorMessages = Array.isArray(history)
+      ? history.map((m: { role: string; text: string }) => ({
+          role: m.role === "agent" ? "assistant" : "user",
+          content: m.text,
+        }))
+      : [];
+
     const messages: any[] = [
       { role: "system", content: SYSTEM_PROMPT },
+      ...priorMessages,
       { role: "user", content: message },
     ];
 
