@@ -51,19 +51,21 @@ const httpServer = createServer(async (req: IncomingMessage, res: ServerResponse
 
   // MCP endpoint — new server instance per request
   if (req.url === "/mcp" || req.url?.startsWith("/mcp?")) {
+    console.log(`[${new Date().toISOString()}] MCP request: ${req.method} Accept: ${req.headers["accept"]}`);
+
     const server = createMcpServer();
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined, // stateless — each request is independent
     });
 
-    // Force JSON-only responses — strip SSE from Accept header so cloudflared
-    // (and other proxies) can proxy the response without dropping the stream
-    req.headers["accept"] = "application/json";
-
-    res.on("close", () => transport.close());
+    res.on("close", () => {
+      console.log(`[${new Date().toISOString()}] MCP connection closed`);
+      transport.close();
+    });
 
     await server.connect(transport);
     await transport.handleRequest(req, res);
+    console.log(`[${new Date().toISOString()}] MCP request handled`);
     return;
   }
 

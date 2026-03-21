@@ -26,10 +26,15 @@ export async function POST(req: Request) {
     await client.agents.messages.create(thread.id, "user", message);
 
     // createAndPoll returns a PollerLike directly (not a Promise) — call pollUntilDone() on it
-    // timeout after 60s so the frontend never hangs indefinitely
-    const run = await client.agents.runs.createAndPoll(thread.id, agentId).pollUntilDone({
-      abortSignal: AbortSignal.timeout(60_000),
+    console.log("Starting run for thread:", thread.id, "agent:", agentId);
+    const runResponse = client.agents.runs.createAndPoll(thread.id, agentId);
+    runResponse.onProgress((state) => {
+      console.log("Run status:", state.status);
     });
+    const run = await runResponse.pollUntilDone({
+      abortSignal: AbortSignal.timeout(120_000),
+    });
+    console.log("Run completed with status:", run.status, run.lastError ?? "");
 
     if (run.status !== "completed") {
       console.error("Run did not complete:", run.status, run.lastError);

@@ -26,6 +26,7 @@ const response = await fetch(`${ENDPOINT}/assistants/${AGENT_ID}?api-version=v1`
         server_label: "postgres_mcp",
         server_url: `${MCP_URL}/mcp`,
         allowed_tools: ["list_tables", "query_sql"],
+        require_approval: "never",
       },
     ],
   }),
