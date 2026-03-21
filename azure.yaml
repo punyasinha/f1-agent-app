@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: f1-agent-app
+
+infra:
+  provider: bicep
+  path: infra
+  module: main
+
+services:
+  mcp-server:
+    project: ./mcp-server
+    language: ts
+    host: containerapp
+    docker:
+      path: ./mcp-server/Dockerfile
+      context: ./mcp-server
