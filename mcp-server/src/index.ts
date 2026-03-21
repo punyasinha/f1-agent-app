@@ -51,7 +51,7 @@ const httpServer = createServer(async (req: IncomingMessage, res: ServerResponse
 
   // MCP endpoint — new server instance per request
   if (req.url === "/mcp" || req.url?.startsWith("/mcp?")) {
-    console.log(`[${new Date().toISOString()}] MCP request: ${req.method} Accept: ${req.headers["accept"]}`);
+    console.log(`[${new Date().toISOString()}] MCP request from Foundry`);
 
     const server = createMcpServer();
     const transport = new StreamableHTTPServerTransport({

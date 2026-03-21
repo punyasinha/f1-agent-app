@@ -42,6 +42,7 @@ export const listTablesTool: McpTool = {
     required: [],
   },
   async execute(_args) {
+    console.log(`[${new Date().toISOString()}] list_tables called`);
     const result = await pool.query(`
       SELECT
         c.table_name,
@@ -91,6 +92,7 @@ export const querySqlTool: McpTool = {
   },
   async execute(args) {
     const { sql } = QuerySqlInput.parse(args);
+    console.log(`[${new Date().toISOString()}] query_sql called: ${sql}`);
     const cleaned = assertSelectOnly(sql);
 
     // Wrap the query in a LIMIT to prevent runaway full-table scans
